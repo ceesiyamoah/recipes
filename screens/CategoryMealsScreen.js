@@ -10,7 +10,7 @@ const CategoryMealsScreen = ({ navigation }) => {
 		item.categoryIds.includes(selectedCategory.id)
 	);
 
-	const renderMealItem = ({ item: { title, id } }) => (
+	const renderMealItem = ({ item: { title, id, ...rest } }) => (
 		<MealItem
 			title={title}
 			onSelect={() => {
@@ -18,6 +18,7 @@ const CategoryMealsScreen = ({ navigation }) => {
 					mealId: id,
 				});
 			}}
+			{...rest}
 		/>
 	);
 
@@ -27,6 +28,7 @@ const CategoryMealsScreen = ({ navigation }) => {
 				data={selectedMeals}
 				keyExtractor={(item) => item.id}
 				renderItem={renderMealItem}
+				style={{ width: '100%' }}
 			/>
 		</View>
 	);
@@ -51,6 +53,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
+		marginHorizontal: 15,
 	},
 });
 export default CategoryMealsScreen;
