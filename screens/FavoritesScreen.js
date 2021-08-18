@@ -1,17 +1,33 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-const FavoritesScreen = () => {
-	return (
-		<View style={styles.screen}>
-			<Text>Favorite</Text>
-		</View>
-	);
+import MealList from '../components/MealList';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import CustomHeaderButton from '../components/HeaderButton';
+import { connect } from 'react-redux';
+
+const FavoritesScreen = ({ navigation, meals }) => {
+	return <MealList data={meals} navigation={navigation} />;
 };
-const styles = StyleSheet.create({
-	screen: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
+
+FavoritesScreen.navigationOptions = ({ navigation }) => {
+	return {
+		headerTitle: 'Your Favorites',
+		headerLeft: () => (
+			<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+				<Item
+					title='Menu'
+					iconName='menu-outline'
+					onPress={() => {
+						navigation.toggleDrawer();
+					}}
+				/>
+			</HeaderButtons>
+		),
+	};
+};
+const mapStateToProps = (state) => ({
+	meals: state.meals.favoriteMeals,
 });
-export default FavoritesScreen;
+
+const mapDispatchToProps = {};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FavoritesScreen);

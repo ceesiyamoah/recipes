@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import ImageBackground from 'react-native/Libraries/Image/ImageBackground';
+import DefaultText from './DefaultText';
 const MealItem = ({
 	title,
 	imageUrl,
@@ -35,9 +36,9 @@ const MealItem = ({
 						</ImageBackground>
 					</View>
 					<View style={{ ...styles.mealRow, ...styles.mealDetail }}>
-						<Text>{duration} m </Text>
-						<Text>{complexity.toUpperCase()}</Text>
-						<Text>{affordability.toUpperCase()}</Text>
+						<DefaultText>{duration} m </DefaultText>
+						<DefaultText>{complexity.toUpperCase()}</DefaultText>
+						<DefaultText>{affordability.toUpperCase()}</DefaultText>
 					</View>
 				</View>
 			</Touchable>
