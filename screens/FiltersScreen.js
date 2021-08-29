@@ -1,14 +1,27 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Text, Button, ToastAndroid } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import { connect } from 'react-redux';
 import FilterSwitch from '../components/FilterSwitch';
 import CustomHeaderButton from '../components/HeaderButton';
-import { colors } from '../constants/colors';
-const FiltersScreen = () => {
+import { setFilters } from '../store/actions/mealsAction';
+const FiltersScreen = ({ navigation, setFilters }) => {
 	const [isGlutenFree, setIsGlutenFree] = useState(false);
 	const [isVegan, setIsVegan] = useState(false);
 	const [isVegetarian, setIsVegetarian] = useState(false);
 	const [isLactoseFree, setIsLactoseFree] = useState(false);
+
+	useEffect(() => {
+		navigation.setParams({
+			setFilters: () =>
+				setFilters({
+					glutenFree: isGlutenFree,
+					vegan: isVegan,
+					lactoseFree: isLactoseFree,
+					vegetarian: isVegetarian,
+				}),
+		});
+	}, [setFilters, isGlutenFree, isVegan, isLactoseFree, isVegetarian]);
 	return (
 		<View style={styles.screen}>
 			<Text style={styles.title}>Available Filters / Restrictions</Text>
@@ -43,6 +56,8 @@ const styles = StyleSheet.create({
 });
 
 FiltersScreen.navigationOptions = ({ navigation }) => {
+	const setFilters = navigation.getParam('setFilters');
+
 	return {
 		headerTitle: 'Filter Meals',
 		headerLeft: () => (
@@ -62,12 +77,18 @@ FiltersScreen.navigationOptions = ({ navigation }) => {
 					title='Save'
 					iconName='save'
 					onPress={() => {
-						console.log('save');
+						setFilters();
+						ToastAndroid.show('Filters saved', ToastAndroid.SHORT);
 					}}
 				/>
 			</HeaderButtons>
 		),
 	};
 };
+const mapStateToProps = (state) => ({});
 
-export default FiltersScreen;
+const mapDispatchToProps = {
+	setFilters,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(FiltersScreen);

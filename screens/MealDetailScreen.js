@@ -1,11 +1,13 @@
-import React from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Text, Image, Button } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import { useSelector } from 'react-redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import DefaultText from '../components/DefaultText';
 import CustomHeaderButton from '../components/HeaderButton';
 import { MEALS } from '../data/dummy';
+import { toggleFavorite } from '../store/actions/mealsAction';
 
 const ListItem = ({ children }) => (
 	<View style={styles.listItem}>
@@ -13,8 +15,20 @@ const ListItem = ({ children }) => (
 	</View>
 );
 
-const MealDetailScreen = ({ navigation }) => {
-	const meals = useSelector((state) => state.meals.meals);
+const MealDetailScreen = ({ navigation, meals, toggleFavorite, favs }) => {
+	const mealId = navigation.getParam('mealId');
+	useEffect(() => {
+		navigation.setParams({
+			toggleFavorite,
+		});
+	}, [toggleFavorite]);
+
+	useEffect(() => {
+		navigation.setParams({
+			faved: favs.some((meal) => meal.id === mealId),
+		});
+	}, [favs]);
+
 	const {
 		duration,
 		complexity,
@@ -23,7 +37,7 @@ const MealDetailScreen = ({ navigation }) => {
 		title,
 		steps,
 		imageUrl,
-	} = meals.find((item) => item.id === navigation.getParam('mealId'));
+	} = meals.find((item) => item.id === mealId);
 	return (
 		<ScrollView>
 			<Image source={{ uri: imageUrl }} style={styles.image} />
@@ -73,13 +87,32 @@ MealDetailScreen.navigationOptions = ({ navigation }) => {
 	const selectedMeal = MEALS.find(
 		(item) => item.id === navigation.getParam('mealId')
 	);
+
+	const toggleFavorite = navigation.getParam('toggleFavorite');
+
 	return {
 		headerTitle: selectedMeal.title,
 		headerRight: () => (
 			<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-				<Item title='favorite' iconName='heart' onPress={() => {}} />
+				<Item
+					title='favorite'
+					iconName={navigation.getParam('faved') ? 'star' : 'star-outline'}
+					onPress={() => {
+						toggleFavorite(selectedMeal.id);
+					}}
+				/>
 			</HeaderButtons>
 		),
 	};
 };
-export default MealDetailScreen;
+
+const mapStateToProps = (state) => ({
+	meals: state.meals.meals,
+	favs: state.meals.favoriteMeals,
+});
+
+const mapDispatchToProps = {
+	toggleFavorite,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MealDetailScreen);
